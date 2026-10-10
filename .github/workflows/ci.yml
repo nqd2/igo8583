@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go: ['1.22.12', stable]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache: false
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          $files = @(git ls-files '*.go')
+          $unformatted = @(& gofmt -l $files)
+          if ($LASTEXITCODE -ne 0) { throw 'gofmt failed' }
+          if ($unformatted.Count -ne 0) { throw "Unformatted files: $unformatted" }
+      - run: go test -count=1 ./...
+      - run: go vet ./...
+      - name: Race tests
+        if: runner.os == 'Linux'
+        run: go test -race -count=1 ./...
+      - name: Examples
+        shell: pwsh
+        run: |
+          foreach ($example in @('test_pack', 'custom_switch', 'struct_binding', 'custom_format')) {
+            go run "./examples/$example"
+            if ($LASTEXITCODE -ne 0) { throw "Example failed: $example" }
+          }
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+      - run: go test . -run '^$' -fuzz '^FuzzUnpackISO87$' -fuzztime 10s
+      - run: go test ./prefixer -run '^$' -fuzz '^FuzzLengthPrefixes$' -fuzztime 10s
+      - run: go test ./tlv -run '^$' -fuzz '^FuzzDecode$' -fuzztime 10s

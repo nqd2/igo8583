@@ -1,0 +1,99 @@
+{
+  "name": "Synthetic example with composite and TLV fields",
+  "bitmap_format": "hex",
+  "header_length": 0,
+  "fields": {
+    "0": {
+      "name": "Message Type Indicator",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "2": {
+      "name": "Primary Account Number (PAN)",
+      "len": 19,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "3": {
+      "name": "Processing Code",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "4": {
+      "name": "Amount, Transaction",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "11": {
+      "name": "System Trace Audit Number (STAN)",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "39": {
+      "name": "Response Code",
+      "len": 2,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "41": {
+      "name": "Card Acceptor Terminal Identification",
+      "len": 8,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "48": {
+      "name": "Private Additional Data",
+      "len": 999,
+      "type": "composite",
+      "prefixer": "ascii_lll",
+      "subfields": {
+        "1": {
+          "name": "Channel ID",
+          "len": 3,
+          "type": "string",
+          "prefixer": "fixed",
+          "interpreter": "ascii"
+        },
+        "2": {
+          "name": "Session Token",
+          "len": 32,
+          "type": "string",
+          "prefixer": "fixed",
+          "interpreter": "ascii"
+        }
+      }
+    },
+    "55": {
+      "name": "EMV Integrated Circuit Card (ICC) Chip Data",
+      "len": 999,
+      "type": "tlv",
+      "prefixer": "ascii_lll"
+    },
+    "70": {
+      "name": "Network Management Information Code",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    }
+  }
+}

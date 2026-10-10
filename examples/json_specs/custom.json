@@ -1,0 +1,48 @@
+{
+  "name": "Synthetic framed format",
+  "bitmap_format": "hex",
+  "header_length": 2,
+  "length_prefix": {
+    "encoding": "ascii",
+    "width": 4,
+    "counts": "body"
+  },
+  "fields": {
+    "0": {
+      "name": "MTI",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii"
+    },
+    "11": {
+      "name": "STAN",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "48": {
+      "name": "Private data",
+      "len": 99,
+      "type": "composite",
+      "prefixer": "ascii_ll",
+      "subfields": {
+        "1": {
+          "name": "Channel",
+          "len": 3,
+          "type": "string",
+          "prefixer": "fixed",
+          "interpreter": "ascii"
+        }
+      }
+    },
+    "55": {
+      "name": "Chip data",
+      "len": 99,
+      "type": "tlv",
+      "prefixer": "ascii_ll"
+    }
+  }
+}

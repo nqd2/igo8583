@@ -1,0 +1,1013 @@
+{
+  "name": "ISO 8583:1987 ASCII 128-position profile",
+  "bitmap_format": "hex",
+  "fields": {
+    "0": {
+      "name": "Message type indicator",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "2": {
+      "name": "Primary account number (PAN)",
+      "len": 19,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "3": {
+      "name": "Processing Code",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "4": {
+      "name": "Amount Transaction",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "5": {
+      "name": "Amount, settlement",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "6": {
+      "name": "Amount, cardholder billing",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "7": {
+      "name": "Transmission date & time",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "8": {
+      "name": "Amount, cardholder billing fee",
+      "len": 8,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "9": {
+      "name": "Conversion rate, settlement",
+      "len": 8,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "10": {
+      "name": "Conversion rate, cardholder billing",
+      "len": 8,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "11": {
+      "name": "System trace audit number (STAN)",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "12": {
+      "name": "Local transaction time (hhmmss)",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "13": {
+      "name": "Local transaction date (MMDD)",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "14": {
+      "name": "Expiration date (YYMM)",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "15": {
+      "name": "Settlement date",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "16": {
+      "name": "Currency conversion date",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "17": {
+      "name": "Capture date",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "18": {
+      "name": "Merchant type, or merchant category code",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "19": {
+      "name": "Acquiring institution (country code)",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "20": {
+      "name": "PAN extended (country code)",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "21": {
+      "name": "Forwarding institution (country code)",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "22": {
+      "name": "Point of service entry mode",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "23": {
+      "name": "Application PAN sequence number",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "24": {
+      "name": "Function code (ISO 8583:1993), or network international identifier (NII)",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "25": {
+      "name": "Point of service condition code",
+      "len": 2,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "26": {
+      "name": "Point of service capture code",
+      "len": 2,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "27": {
+      "name": "Authorizing identification response length",
+      "len": 1,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "28": {
+      "name": "Amount, transaction fee",
+      "len": 9,
+      "type": "amount",
+      "prefixer": "fixed",
+      "interpreter": "ascii"
+    },
+    "29": {
+      "name": "Amount, settlement fee",
+      "len": 9,
+      "type": "amount",
+      "prefixer": "fixed",
+      "interpreter": "ascii"
+    },
+    "30": {
+      "name": "Amount, transaction processing fee",
+      "len": 9,
+      "type": "amount",
+      "prefixer": "fixed",
+      "interpreter": "ascii"
+    },
+    "31": {
+      "name": "Amount, settlement processing fee",
+      "len": 9,
+      "type": "amount",
+      "prefixer": "fixed",
+      "interpreter": "ascii"
+    },
+    "32": {
+      "name": "Acquiring institution identification code",
+      "len": 11,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "33": {
+      "name": "Forwarding institution identification code",
+      "len": 11,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "34": {
+      "name": "Primary account number, extended",
+      "len": 28,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "35": {
+      "name": "Track 2 data",
+      "len": 37,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "36": {
+      "name": "Track 3 data",
+      "len": 104,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "37": {
+      "name": "Retrieval reference number",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "38": {
+      "name": "Authorization identification response",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "39": {
+      "name": "Response code",
+      "len": 2,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "40": {
+      "name": "Service restriction code",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "41": {
+      "name": "Card acceptor terminal identification",
+      "len": 8,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "42": {
+      "name": "Card acceptor identification code",
+      "len": 15,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "43": {
+      "name": "Card acceptor name/location (1–25 card acceptor name or automated teller machine (ATM) location, 26-38 city name, 39-40 country code)",
+      "len": 40,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "44": {
+      "name": "Additional response data",
+      "len": 25,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "45": {
+      "name": "Track 1 data",
+      "len": 76,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "46": {
+      "name": "Additional data (ISO)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "47": {
+      "name": "Additional data (national)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "48": {
+      "name": "Additional data (private)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "49": {
+      "name": "Currency code, transaction",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "50": {
+      "name": "Currency code, settlement",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "51": {
+      "name": "Currency code, cardholder billing",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "52": {
+      "name": "Personal identification number data",
+      "len": 8,
+      "type": "binary",
+      "prefixer": "fixed",
+      "interpreter": "ascii_hex"
+    },
+    "53": {
+      "name": "Security related control information",
+      "len": 16,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "54": {
+      "name": "Additional amounts",
+      "len": 120,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "55": {
+      "name": "ICC data – EMV having multiple tags",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "56": {
+      "name": "Reserved (ISO)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "57": {
+      "name": "Reserved (national)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "58": {
+      "name": "Reserved (national)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "59": {
+      "name": "Reserved (national)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "60": {
+      "name": "Reserved (national) (e.g. settlement request: batch number, advice transactions: original transaction amount, batch upload: original MTI plus original RRN plus original STAN, etc.)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "61": {
+      "name": "Reserved (private) (e.g. CVV2/service code transactions)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "62": {
+      "name": "Reserved (private) (e.g. transactions: invoice number, key exchange transactions: TPK key, etc.)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "63": {
+      "name": "Reserved (private)",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "64": {
+      "name": "Message authentication code (MAC)",
+      "len": 8,
+      "type": "binary",
+      "prefixer": "fixed",
+      "interpreter": "ascii_hex"
+    },
+    "66": {
+      "name": "Settlement code",
+      "len": 1,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "67": {
+      "name": "Extended payment code",
+      "len": 2,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "68": {
+      "name": "Receiving institution country code",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "69": {
+      "name": "Settlement institution country code",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "70": {
+      "name": "Network management information code",
+      "len": 3,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "71": {
+      "name": "Message number",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "72": {
+      "name": "Last message's number",
+      "len": 4,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "73": {
+      "name": "Action date (YYMMDD)",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "74": {
+      "name": "Number of credits",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "75": {
+      "name": "Credits, reversal number",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "76": {
+      "name": "Number of debits",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "77": {
+      "name": "Debits, reversal number",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "78": {
+      "name": "Transfer number",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "79": {
+      "name": "Transfer, reversal number",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "80": {
+      "name": "Number of inquiries",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "81": {
+      "name": "Number of authorizations",
+      "len": 10,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "82": {
+      "name": "Credits, processing fee amount",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "83": {
+      "name": "Credits, transaction fee amount",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "84": {
+      "name": "Debits, processing fee amount",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "85": {
+      "name": "Debits, transaction fee amount",
+      "len": 12,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "86": {
+      "name": "Total amount of credits",
+      "len": 16,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "87": {
+      "name": "Credits, reversal amount",
+      "len": 16,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "88": {
+      "name": "Total amount of debits",
+      "len": 16,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "89": {
+      "name": "Debits, reversal amount",
+      "len": 16,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "90": {
+      "name": "Original data elements Original MTI (4 digits) Original STAN (DE11) (6 digits) Original Transmission Date & Time (DE7) (10 digits) Original Acquiring Institution ID Code (DE32) (11 digits) Original Forwarding Institution ID Code (DE33) (11 digits)",
+      "len": 42,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "left_zero"
+    },
+    "91": {
+      "name": "File update code",
+      "len": 1,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "92": {
+      "name": "File security code",
+      "len": 2,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "93": {
+      "name": "Response indicator",
+      "len": 6,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "94": {
+      "name": "Service indicator",
+      "len": 7,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "95": {
+      "name": "Replacement amounts",
+      "len": 42,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "96": {
+      "name": "Message security code",
+      "len": 16,
+      "type": "binary",
+      "prefixer": "fixed",
+      "interpreter": "ascii_hex"
+    },
+    "97": {
+      "name": "Net settlement amount",
+      "len": 17,
+      "type": "amount",
+      "prefixer": "fixed",
+      "interpreter": "ascii"
+    },
+    "98": {
+      "name": "Payee",
+      "len": 25,
+      "type": "string",
+      "prefixer": "fixed",
+      "interpreter": "ascii",
+      "padder": "right_space"
+    },
+    "99": {
+      "name": "Settlement institution identification code",
+      "len": 11,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "100": {
+      "name": "Receiving institution identification code",
+      "len": 11,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "101": {
+      "name": "File name",
+      "len": 17,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "102": {
+      "name": "Account identification 1",
+      "len": 28,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "103": {
+      "name": "Account identification 2",
+      "len": 28,
+      "type": "string",
+      "prefixer": "ascii_ll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "104": {
+      "name": "Transaction description",
+      "len": 100,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "105": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "106": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "107": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "108": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "109": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "110": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "111": {
+      "name": "Reserved for ISO use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "112": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "113": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "114": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "115": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "116": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "117": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "118": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "119": {
+      "name": "Reserved for national use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "120": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "121": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "122": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "123": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "124": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "125": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "126": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "127": {
+      "name": "Reserved for private use",
+      "len": 999,
+      "type": "string",
+      "prefixer": "ascii_lll",
+      "interpreter": "ascii",
+      "padder": "none"
+    },
+    "128": {
+      "name": "Message authentication code",
+      "len": 8,
+      "type": "binary",
+      "prefixer": "fixed",
+      "interpreter": "ascii_hex"
+    }
+  }
+}
