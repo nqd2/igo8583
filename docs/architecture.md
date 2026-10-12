@@ -56,7 +56,7 @@ strategy. Custom field packagers should validate immutable configuration
 during compilation and remain immutable when a compiled codec is shared.
 
 For a network dialect, use an application package such as
-`your-project/specs/napas`. Load the dialect's field layout there and add a
+`your-project/specs/custom`. Load the dialect's field layout there and add a
 separate validator for MTI-specific required fields. This keeps network
 policy out of the generic serialization packages.
 

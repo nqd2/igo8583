@@ -25,7 +25,7 @@ the dialect. A useful layout is:
 
 The package can load the JSON layout with FromJSON or FromJSONFile, expose a
 Codec factory, and validate transaction-specific requirements. The library
-does not include a NAPAS package or a payment-network validator.
+does not include network-specific dialect packages or transaction validators.
 
 # Package responsibilities
 

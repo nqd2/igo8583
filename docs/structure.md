@@ -25,7 +25,7 @@ payment network protocol.
 | `docs/` | Integration, maintenance, architecture, feature, API, and structure guides |
 
 Custom network dialects belong to the consuming application's module, for
-example `your-project/specs/napas`. That package can depend on `igo8583`, load
+example `your-project/specs/custom`. That package can depend on `igo8583`, load
 its own JSON field layout, and define network-specific validation. It should
 not add a nested `go.mod` unless the dialect is intended for independent
 versioning and reuse.

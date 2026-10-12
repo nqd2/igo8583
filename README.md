@@ -65,21 +65,20 @@ can own its wire specification, codec factory, and transaction validation:
 /your-project/
 ├── cmd/server/
 └── specs/
-    └── napas/
-        ├── napas_spec.json
-        ├── napas.go
+    └── custom/
+        ├── spec.json
+        ├── codec.go
         └── validate.go
 ```
 
-`igo8583` does not contain a NAPAS module or NAPAS transaction rules. The
-`specs/napas` directory is an ordinary package inside the application's Go
-module. The runnable [custom dialect example](examples/custom_dialect) shows
-the same pattern without a nested Go module.
+`specs/custom` is an ordinary package inside the application's Go module. The
+runnable [custom dialect example](examples/custom_dialect) shows the same
+pattern without a nested Go module.
 
 A dialect package loads and compiles its field definition with the library:
 
 ```go
-package napas
+package custom
 
 import (
 	_ "embed"
@@ -87,10 +86,10 @@ import (
 	"github.com/nqd2/igo8583"
 )
 
-//go:embed napas_spec.json
+//go:embed spec.json
 var specJSON []byte
 
-/* Codec compiles and returns this application's NAPAS wire layout. */
+/* Codec compiles and returns this application's wire layout. */
 func Codec() (*igo8583.Codec, error) {
 	return igo8583.FromJSON(specJSON)
 }
@@ -98,9 +97,9 @@ func Codec() (*igo8583.Codec, error) {
 
 The JSON and builder APIs validate the layout: field IDs, lengths, encoders,
 prefixes, padding, MTI definition, header size, and framing configuration.
-They do not validate transaction requirements such as which fields an ATM
-withdrawal needs or which DE 39 values NAPAS accepts. Implement those rules in
-`specs/napas/validate.go`, next to the dialect definition.
+They do not validate transaction requirements such as which fields a
+withdrawal needs or which response codes a network accepts. Implement those
+rules in `specs/custom/validate.go`, next to the dialect definition.
 
 See [custom JSON](examples/json_specs/custom.json),
 [custom dialect with validation](examples/custom_dialect),

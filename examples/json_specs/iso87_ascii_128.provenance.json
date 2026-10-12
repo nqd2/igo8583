@@ -2,11 +2,11 @@
   "name": "ISO 8583:1987 ASCII 128-position profile",
   "bitmap_format": "hex",
   "reference": {
-    "basis": "Local jPOS packager/iso87ascii.xml field classes and lengths; ISO8583_1987_vs_NAPAS_128_DE.xlsx supplies field names",
+    "basis": "Local jPOS packager/iso87ascii.xml field classes, lengths, and field names",
     "notes": [
       "DE1 and DE65 are bitmap indicators, not data fields.",
       "DE28-31 and DE97 contain a sign plus zero-padded amount digits.",
-      "DE55 is LLLCHAR in iso87ascii.xml; NAPAS DE55 is BER-TLV.",
+      "DE55 is LLLCHAR in iso87ascii.xml; other network profiles may encode it differently.",
       "Fixed binary fields use ASCII hex on the wire.",
       "This is a field-format profile, not transaction-level validation."
     ]
