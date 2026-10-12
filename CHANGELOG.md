@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.2 - 2026-10-12
+
+- Remove redundant nil-map checks in composite packing and message dumps.
+- Generalize dialect documentation and fixture provenance for the core library.
+
 ## v1.0.1 - 2026-10-12
 
 - Expand the README with installation, pack/unpack, layout, custom dialect, API, and concurrency guidance.
