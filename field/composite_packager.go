@@ -73,7 +73,7 @@ func (c *compositeFieldPackager) Pack(comp *Component) ([]byte, error) {
 	}
 	var body []byte
 
-	if comp.Subfields != nil && len(comp.Subfields) > 0 {
+	if len(comp.Subfields) > 0 {
 		if len(comp.Subfields) != len(c.subPackagers) {
 			return nil, fmt.Errorf("composite field %s: sequential layout requires every declared subfield", c.description)
 		}

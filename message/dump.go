@@ -59,7 +59,7 @@ func (m *Message) Dump(maskSensitive bool) string {
 }
 
 func dumpComponent(sb *strings.Builder, id int, comp *field.Component, indent string, maskSensitive bool) {
-	if comp.Subfields != nil && len(comp.Subfields) > 0 {
+	if len(comp.Subfields) > 0 {
 		sb.WriteString(fmt.Sprintf("%s<!-- %03d --> <composite id=\"%d\">\n", indent, id, id))
 		var subIDs []int
 		for sID := range comp.Subfields {
