@@ -10,12 +10,17 @@ type bcdPrefixer struct {
 	maxVal  int
 }
 
-// Bcd returns a packed BCD length prefixer with nDigits (e.g. LL = 2 digits -> 1 byte, LLL = 3 digits -> 2 bytes).
+/*
+Bcd returns a packed BCD length prefixer with nDigits (e.g. LL = 2 digits -> 1 byte, LLL = 3 digits -> 2 bytes).
+*/
 func Bcd(nDigits int) Prefixer {
 	maxVal := int(math.Pow10(nDigits)) - 1
 	return &bcdPrefixer{nDigits: nDigits, maxVal: maxVal}
 }
 
+/*
+Pre-configured BCD prefixer singletons.
+*/
 var (
 	BcdL      = Bcd(1)
 	BcdLL     = Bcd(2)

@@ -13,7 +13,7 @@ type tlvFieldPackager struct {
 	prefixer    prefixer.Prefixer
 }
 
-// NewTLVFieldPackager creates a packager for BER-TLV formatted fields (e.g. EMV chip data).
+/* NewTLVFieldPackager creates a packager for BER-TLV formatted fields such as EMV data. */
 func NewTLVFieldPackager(length int, description string, pref prefixer.Prefixer) FieldPackager {
 	if pref == nil {
 		pref = prefixer.Fixed(length)

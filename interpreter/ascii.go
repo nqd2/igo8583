@@ -6,7 +6,9 @@ import (
 
 type asciiInterpreter struct{}
 
-// ASCII returns an Interpreter for ASCII string data.
+/*
+ASCII returns an Interpreter for 7-bit US-ASCII string data.
+*/
 func ASCII() Interpreter {
 	return asciiInterpreter{}
 }

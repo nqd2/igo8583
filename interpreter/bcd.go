@@ -10,17 +10,23 @@ type bcdInterpreter struct {
 	fPadded    bool
 }
 
-// BCDLeftPadded returns a BCD interpreter that pads an odd digit count with a leading zero (e.g. "123" -> 0x01, 0x23).
+/*
+BCDLeftPadded returns a BCD interpreter that pads an odd digit count with a leading zero (e.g. "123" -> 0x01, 0x23).
+*/
 func BCDLeftPadded() Interpreter {
 	return &bcdInterpreter{leftPadded: true, fPadded: false}
 }
 
-// BCDRightPadded returns a BCD interpreter that pads an odd digit count with a trailing zero (e.g. "123" -> 0x12, 0x30).
+/*
+BCDRightPadded returns a BCD interpreter that pads an odd digit count with a trailing zero (e.g. "123" -> 0x12, 0x30).
+*/
 func BCDRightPadded() Interpreter {
 	return &bcdInterpreter{leftPadded: false, fPadded: false}
 }
 
-// BCDRightPaddedF returns a BCD interpreter that pads an odd digit count with trailing 0xF (e.g. "123" -> 0x12, 0x3F).
+/*
+BCDRightPaddedF returns a BCD interpreter that pads an odd digit count with trailing 0xF (e.g. "123" -> 0x12, 0x3F).
+*/
 func BCDRightPaddedF() Interpreter {
 	return &bcdInterpreter{leftPadded: false, fPadded: true}
 }

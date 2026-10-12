@@ -6,7 +6,9 @@ type fixedPrefixer struct {
 	length int
 }
 
-// Fixed returns a Prefixer for fixed-length fields (stores 0 bytes on wire).
+/*
+Fixed returns a Prefixer for fixed-length fields (stores 0 bytes on wire).
+*/
 func Fixed(length int) Prefixer {
 	return &fixedPrefixer{length: length}
 }

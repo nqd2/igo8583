@@ -6,7 +6,9 @@ import (
 
 type binaryInterpreter struct{}
 
-// Binary returns an Interpreter that treats bytes directly.
+/*
+Binary returns an Interpreter that treats bytes directly without character set conversion.
+*/
 func Binary() Interpreter {
 	return binaryInterpreter{}
 }

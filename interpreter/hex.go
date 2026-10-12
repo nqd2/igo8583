@@ -8,13 +8,17 @@ import (
 
 type hexInterpreter struct{ rightPadded bool }
 
-// Hex returns an Interpreter for hexadecimal strings.
-// A hex string like "1A2B" packs to bytes [0x1A, 0x2B].
+/*
+Hex returns an Interpreter for hexadecimal strings.
+A hex string like "1A2B" packs to bytes [0x1A, 0x2B].
+*/
 func Hex() Interpreter {
 	return hexInterpreter{}
 }
 
-// HexRightPadded appends a zero nibble to odd-length hexadecimal values.
+/*
+HexRightPadded appends a zero nibble to odd-length hexadecimal values.
+*/
 func HexRightPadded() Interpreter {
 	return hexInterpreter{rightPadded: true}
 }

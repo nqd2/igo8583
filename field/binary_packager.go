@@ -15,14 +15,18 @@ type binaryFieldPackager struct {
 	asciiHex    bool
 }
 
-// NewASCIIBinaryFieldPackager stores binary bytes as uppercase ASCII hex.
+/*
+NewASCIIBinaryFieldPackager stores binary bytes as uppercase ASCII hex representation.
+*/
 func NewASCIIBinaryFieldPackager(length int, description string, pref prefixer.Prefixer) FieldPackager {
 	b := NewBinaryFieldPackager(length, description, pref).(*binaryFieldPackager)
 	b.asciiHex = true
 	return b
 }
 
-// NewBinaryFieldPackager creates a FieldPackager for raw binary data.
+/*
+NewBinaryFieldPackager creates a FieldPackager for raw binary data elements.
+*/
 func NewBinaryFieldPackager(length int, description string, pref prefixer.Prefixer) FieldPackager {
 	if pref == nil {
 		pref = prefixer.Fixed(length)

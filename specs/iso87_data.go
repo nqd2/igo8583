@@ -1,7 +1,10 @@
 package specs
 
-// ISO 8583:1987 field definitions shared by the ASCII and binary presets.
-// The table describes field positions and logical lengths; wire encoding is selected by each preset.
+/*
+ISO 8583:1987 field definitions shared by the ASCII and binary presets.
+The table describes field positions and logical lengths; each preset selects
+the wire encoding.
+*/
 type iso87FieldDef struct {
 	id       int
 	name     string

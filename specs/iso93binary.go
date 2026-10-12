@@ -8,7 +8,7 @@ import (
 	"github.com/nqd2/igo8583/prefixer"
 )
 
-// ISO93Binary creates a standard ISO-8583:1993 Binary packager.
+/* ISO93Binary creates the ISO 8583:1993 binary codec. */
 func ISO93Binary() *packager.Codec {
 	p := packager.NewBasePackager()
 	p.SetBitmapFormat("binary")

@@ -22,8 +22,11 @@ type stringFieldPackager struct {
 	prefixer    prefixer.Prefixer
 }
 
-// NewStringFieldPackager creates a new FieldPackager for string data.
+/*
+NewStringFieldPackager creates a new FieldPackager for string data elements.
+*/
 func NewStringFieldPackager(
+
 	length int,
 	description string,
 	p padder.Padder,

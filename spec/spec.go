@@ -16,7 +16,13 @@ import (
 	"github.com/nqd2/igo8583/prefixer"
 )
 
-// FieldDef defines a single field specification for JSON serialization.
+/* ============================================================================
+ * JSON Specification Schema
+ * ============================================================================ */
+
+/*
+FieldDef defines a single data element specification for JSON serialization.
+*/
 type FieldDef struct {
 	Name        string              `json:"name"`
 	Length      int                 `json:"len"`
@@ -27,7 +33,9 @@ type FieldDef struct {
 	Subfields   map[string]FieldDef `json:"subfields,omitempty"`
 }
 
-// SpecDef defines the root JSON structure of a packager specification.
+/*
+SpecDef defines the root JSON structure of a packager specification.
+*/
 type SpecDef struct {
 	Name             string              `json:"name"`
 	HeaderLength     int                 `json:"header_length,omitempty"`
@@ -36,16 +44,26 @@ type SpecDef struct {
 	BitmapField      int                 `json:"bitmap_field,omitempty"`       // default 1
 	ThirdBitmapField int                 `json:"third_bitmap_field,omitempty"` // default -1
 	Fields           map[string]FieldDef `json:"fields"`
-	Reference        json.RawMessage     `json:"reference,omitempty"` // documentation only
+	Reference        json.RawMessage     `json:"reference,omitempty"`
 }
 
+/*
+LengthPrefixDef configures the transport framing length prefix.
+*/
 type LengthPrefixDef struct {
 	Encoding string `json:"encoding"`
 	Width    int    `json:"width"`
 	Counts   string `json:"counts"`
 }
 
-// FromJSON compiles a codec from a JSON byte slice.
+/* ============================================================================
+ * Spec Compilation (FromJSON / FromJSONFile)
+ * ============================================================================ */
+
+/*
+FromJSON compiles a codec from declarative JSON specification bytes.
+Disallows unknown properties and validates MTI and bitmap positions.
+*/
 func FromJSON(data []byte) (*packager.Codec, error) {
 	var def SpecDef
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -107,7 +125,9 @@ func FromJSON(data []byte) (*packager.Codec, error) {
 	return pkg.Compile()
 }
 
-// FromJSONFile loads and compiles a codec from a JSON file.
+/*
+FromJSONFile reads a specification file from disk and compiles a Codec.
+*/
 func FromJSONFile(filename string) (*packager.Codec, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -115,6 +135,10 @@ func FromJSONFile(filename string) (*packager.Codec, error) {
 	}
 	return FromJSON(data)
 }
+
+/* ============================================================================
+ * Strategy Resolvers (Prefixer, Padder, Interpreter)
+ * ============================================================================ */
 
 func buildFieldPackager(def FieldDef) (field.FieldPackager, error) {
 	if def.Length <= 0 {

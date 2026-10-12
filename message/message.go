@@ -11,9 +11,12 @@ import (
 	"github.com/nqd2/igo8583/tlv"
 )
 
-// Message represents an in-memory ISO 8583 message.
-// Its methods synchronize map access, but components and TLV values can be shared.
-// Do not mutate a message or its referenced values while packing or inspecting it.
+/*
+Message represents an in-memory ISO 8583 financial message.
+Internal map and bitmap modifications are synchronized using sync.RWMutex.
+Referenced field components and TLV trees should not be mutated concurrently
+during packing or inspection.
+*/
 type Message struct {
 	mu     sync.RWMutex
 	header []byte
@@ -21,7 +24,13 @@ type Message struct {
 	bitmap *bitmap.Bitmap
 }
 
-// New creates a new empty Message.
+/* ============================================================================
+ * Constructors & Lifecycle
+ * ============================================================================ */
+
+/*
+New creates an initialized empty Message with an empty bitmap and fields map.
+*/
 func New() *Message {
 	return &Message{
 		fields: make(map[int]*field.Component),
@@ -29,7 +38,30 @@ func New() *Message {
 	}
 }
 
-// SetHeader sets the optional ISO header (or TPDU).
+/*
+Clone returns an independent deep copy of the message, duplicating header bytes,
+bitmap state, and all stored field components.
+*/
+func (m *Message) Clone() *Message {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	clone := New()
+	if m.header != nil {
+		clone.header = make([]byte, len(m.header))
+		copy(clone.header, m.header)
+	}
+	clone.bitmap = m.bitmap.Clone()
+	for k, v := range m.fields {
+		clone.fields[k] = v.Clone()
+	}
+	return clone
+}
+
+/* ============================================================================
+ * Header & MTI Operations
+ * ============================================================================ */
+
 func (m *Message) SetHeader(hdr []byte) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -37,7 +69,6 @@ func (m *Message) SetHeader(hdr []byte) {
 	copy(m.header, hdr)
 }
 
-// GetHeader returns the ISO header.
 func (m *Message) GetHeader() []byte {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -49,38 +80,69 @@ func (m *Message) GetHeader() []byte {
 	return cpy
 }
 
-// SetMTI sets the Message Type Indicator (field 0).
 func (m *Message) SetMTI(mti string) {
 	m.Set(0, mti)
 }
 
-// GetMTI retrieves the Message Type Indicator (field 0).
 func (m *Message) GetMTI() string {
 	s, _ := m.GetString(0)
 	return s
 }
 
-// Set stores a string field into the message and marks the bitmap (if field > 0).
+/* ============================================================================
+ * Data Element Accessors (Typed)
+ * ============================================================================ */
+
 func (m *Message) Set(fieldID int, val string) {
 	comp := field.NewStringComponent(fieldID, val)
 	m.SetComponent(fieldID, comp)
 }
 
-// SetBytes stores a raw byte field without copying val.
+func (m *Message) GetString(fieldID int) (string, bool) {
+	comp, ok := m.Get(fieldID)
+	if !ok {
+		return "", false
+	}
+	return comp.GetString(), true
+}
+
 func (m *Message) SetBytes(fieldID int, val []byte) {
 	comp := field.NewBytesComponent(fieldID, val)
 	m.SetComponent(fieldID, comp)
 }
 
-// SetTLV stores a TLV map without copying it.
+func (m *Message) GetBytes(fieldID int) ([]byte, bool) {
+	comp, ok := m.Get(fieldID)
+	if !ok {
+		return nil, false
+	}
+	return comp.GetBytes(), true
+}
+
 func (m *Message) SetTLV(fieldID int, tlvMap *tlv.TLVMap) {
 	comp := field.NewTLVComponent(fieldID, tlvMap)
 	m.SetComponent(fieldID, comp)
 }
 
-// SetComponent stores comp by reference and updates its FieldID.
-// comp must be non-nil.
+func (m *Message) GetTLV(fieldID int) (*tlv.TLVMap, bool) {
+	comp, ok := m.Get(fieldID)
+	if !ok || comp.TLV == nil {
+		return nil, false
+	}
+	return comp.TLV, true
+}
+
+/* ============================================================================
+ * Generic Component & Map Operations
+ * ============================================================================ */
+
+/*
+SetComponent stores a component reference and marks the field in the bitmap (if fieldID > 0).
+*/
 func (m *Message) SetComponent(fieldID int, comp *field.Component) {
+	if comp == nil {
+		return
+	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	comp.FieldID = fieldID
@@ -90,7 +152,6 @@ func (m *Message) SetComponent(fieldID int, comp *field.Component) {
 	}
 }
 
-// Get returns the stored component by reference.
 func (m *Message) Get(fieldID int) (*field.Component, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -98,44 +159,6 @@ func (m *Message) Get(fieldID int) (*field.Component, bool) {
 	return comp, ok
 }
 
-// GetString retrieves the string value of a field.
-func (m *Message) GetString(fieldID int) (string, bool) {
-	comp, ok := m.Get(fieldID)
-	if !ok {
-		return "", false
-	}
-	return comp.GetString(), true
-}
-
-// GetBytes returns field bytes, which may reference stored data.
-func (m *Message) GetBytes(fieldID int) ([]byte, bool) {
-	comp, ok := m.Get(fieldID)
-	if !ok {
-		return nil, false
-	}
-	return comp.GetBytes(), true
-}
-
-// GetTLV returns the stored TLV map by reference.
-func (m *Message) GetTLV(fieldID int) (*tlv.TLVMap, bool) {
-	comp, ok := m.Get(fieldID)
-	if !ok || comp.TLV == nil {
-		return nil, false
-	}
-	return comp.TLV, true
-}
-
-// Unset removes a field from the message and clears the bitmap.
-func (m *Message) Unset(fieldID int) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	delete(m.fields, fieldID)
-	if fieldID > 0 {
-		_ = m.bitmap.Clear(fieldID)
-	}
-}
-
-// HasField returns true if the field is present.
 func (m *Message) HasField(fieldID int) bool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -143,21 +166,10 @@ func (m *Message) HasField(fieldID int) bool {
 	return ok
 }
 
-// Bitmap returns a copy of the message's bitmap.
-func (m *Message) Bitmap() *bitmap.Bitmap {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.bitmap.Clone()
-}
-
-// MaxField returns the highest field ID present in the message.
-func (m *Message) MaxField() int {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
-	return m.bitmap.MaxField()
-}
-
-// Fields returns a copy of the internal fields map.
+/*
+Fields returns a snapshot copy of the internal fields map with cloned components.
+Safe for inspection without locking the original message.
+*/
 func (m *Message) Fields() map[int]*field.Component {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -168,7 +180,10 @@ func (m *Message) Fields() map[int]*field.Component {
 	return cpy
 }
 
-// SetSubfield sets a nested subfield inside a parent composite field.
+/* ============================================================================
+ * Composite & Subfield Traversal
+ * ============================================================================ */
+
 func (m *Message) SetSubfield(parentID int, subID int, val string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -182,7 +197,10 @@ func (m *Message) SetSubfield(parentID int, subID int, val string) {
 	parent.SetSubfield(subID, field.NewStringComponent(subID, val))
 }
 
-// GetSubfield traverses a dot-notated path like "48.1" or "127.2.1".
+/*
+GetSubfield traverses a dot-notated hierarchy path (e.g. "48.1" or "127.2.1").
+Returns the string value and true if found, or empty string and false otherwise.
+*/
 func (m *Message) GetSubfield(path string) (string, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -216,7 +234,10 @@ func (m *Message) GetSubfield(path string) (string, bool) {
 	return curr.GetString(), true
 }
 
-// SetSubfieldByPath sets a subfield using a dot-notated path like "48.1".
+/*
+SetSubfieldByPath sets a subfield using a dot-notated path (e.g. "48.1" or "127.2.1").
+Automatically initializes intermediate composite components as needed.
+*/
 func (m *Message) SetSubfieldByPath(path string, val string) error {
 	parts := strings.Split(path, ".")
 	if len(parts) < 2 {
@@ -259,19 +280,27 @@ func (m *Message) SetSubfieldByPath(path string, val string) error {
 	return nil
 }
 
-// Clone creates an independent deep copy of the message.
-func (m *Message) Clone() *Message {
+/* ============================================================================
+ * Bitmap Operations
+ * ============================================================================ */
+
+func (m *Message) Unset(fieldID int) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	delete(m.fields, fieldID)
+	if fieldID > 0 {
+		_ = m.bitmap.Clear(fieldID)
+	}
+}
+
+func (m *Message) Bitmap() *bitmap.Bitmap {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
+	return m.bitmap.Clone()
+}
 
-	clone := New()
-	if m.header != nil {
-		clone.header = make([]byte, len(m.header))
-		copy(clone.header, m.header)
-	}
-	clone.bitmap = m.bitmap.Clone()
-	for k, v := range m.fields {
-		clone.fields[k] = v.Clone()
-	}
-	return clone
+func (m *Message) MaxField() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.bitmap.MaxField()
 }

@@ -6,7 +6,14 @@ import (
 	"strings"
 )
 
-// UnpackError records a failure during message unpacking with its field position and an optional diagnostic payload fragment.
+/* ============================================================================
+ * Diagnostic Errors
+ * ============================================================================ */
+
+/*
+UnpackError records detailed diagnostic information when message decoding fails,
+including the field position, stream byte offset, and a hex snippet of remaining bytes.
+*/
 type UnpackError struct {
 	FieldID      int
 	Offset       int
@@ -23,7 +30,9 @@ func (e *UnpackError) Unwrap() error {
 	return e.Err
 }
 
-// NewUnpackError constructs an UnpackError.
+/*
+NewUnpackError constructs an UnpackError capturing up to 16 bytes of remaining data for hex diagnostics.
+*/
 func NewUnpackError(fieldID, offset int, data []byte, err error) *UnpackError {
 	if len(data) > 16 {
 		data = data[:16]
@@ -37,7 +46,9 @@ func NewUnpackError(fieldID, offset int, data []byte, err error) *UnpackError {
 	}
 }
 
-// PackError records a failure during message packing.
+/*
+PackError records a failure during message serialization, pinpointing the failing field ID.
+*/
 type PackError struct {
 	FieldID int
 	Err     error

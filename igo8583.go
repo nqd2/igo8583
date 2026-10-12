@@ -7,52 +7,76 @@ import (
 	"github.com/nqd2/igo8583/specs"
 )
 
-// Message is an alias to message.Message.
+/* ============================================================================
+ * Type Aliases
+ * ============================================================================ */
+
+/* Message is the in-memory representation of an ISO 8583 message. */
 type Message = message.Message
 
-// Packager is an alias to packager.Packager.
+/* Packager packs complete messages and unpacks complete wire messages. */
 type Packager = packager.Packager
 
-// BasePackager is an alias to packager.BasePackager.
+/* BasePackager collects mutable settings before they are compiled into a Codec. */
 type BasePackager = packager.BasePackager
 
-// Codec is a compiled, immutable packager configuration.
+/* Codec is an immutable compiled message layout. */
 type Codec = packager.Codec
 
-// Builder is an alias to spec.Builder.
+/* Builder fluently defines a message layout before Build compiles it. */
 type Builder = spec.Builder
 
-// NewMessage creates a new empty Message.
+/* ============================================================================
+ * Constructors & Codec Factories
+ * ============================================================================ */
+
+/* NewMessage creates an empty message with initialized field storage. */
 func NewMessage() *Message {
 	return message.New()
 }
 
-// NewBuilder creates a new fluent packager builder.
+/* NewBuilder starts a fluent definition for a custom message layout. */
 func NewBuilder(name string) *Builder {
 	return spec.NewBuilder(name)
 }
 
-// FromJSON creates a packager from JSON specification data.
+/*
+FromJSON compiles a codec from a declarative JSON specification byte slice.
+It validates field lengths, prefix types, and mandatory MTI presence.
+*/
 func FromJSON(data []byte) (*Codec, error) {
 	return spec.FromJSON(data)
 }
 
-// FromJSONFile loads a packager from a JSON specification file.
+/*
+FromJSONFile loads and compiles a codec from a JSON specification file path.
+*/
 func FromJSONFile(filename string) (*Codec, error) {
 	return spec.FromJSONFile(filename)
 }
 
-// Marshal converts a struct tagged with `iso:"..."` into an ISO-8583 Message.
+/* ============================================================================
+ * Struct Marshalling & Binding
+ * ============================================================================ */
+
+/*
+Marshal serializes a Go struct with `iso:"..."` tags into an ISO 8583 Message.
+Supports string, numeric, composite, and TLV field tags.
+*/
 func Marshal(v any) (*Message, error) {
 	return message.Marshal(v)
 }
 
-// Unmarshal populates a struct pointer from an ISO-8583 Message.
+/*
+Unmarshal deserializes an ISO 8583 Message into a destination Go struct pointer.
+*/
 func Unmarshal(msg *Message, v any) error {
 	return message.Unmarshal(msg, v)
 }
 
-// PackStruct is a convenience function that marshals a Go struct and packs it to wire bytes.
+/*
+PackStruct serializes a Go struct and immediately encodes it to wire bytes.
+*/
 func PackStruct(v any, pkg Packager) ([]byte, error) {
 	msg, err := Marshal(v)
 	if err != nil {
@@ -61,7 +85,9 @@ func PackStruct(v any, pkg Packager) ([]byte, error) {
 	return pkg.Pack(msg)
 }
 
-// UnpackStruct is a convenience function that unmarshals wire bytes directly into a Go struct.
+/*
+UnpackStruct decodes wire bytes and populates the destination struct pointer in one call.
+*/
 func UnpackStruct(data []byte, v any, pkg Packager) error {
 	msg, err := pkg.Unpack(data)
 	if err != nil {
@@ -70,7 +96,18 @@ func UnpackStruct(data []byte, v any, pkg Packager) error {
 	return Unmarshal(msg, v)
 }
 
-// Standard Specs Presets
+/* ============================================================================
+ * Standard Protocol Presets
+ * ============================================================================ */
+
+/* ============================================================================
+ * Standard ISO Layout Factories
+ * ============================================================================ */
+
+/*
+Standard ISO layout factories create compiled codecs for ASCII and binary
+ISO 8583:1987 and ISO 8583:1993 field definitions.
+*/
 var (
 	ISO87ASCII  = specs.ISO87ASCII
 	ISO87Binary = specs.ISO87Binary

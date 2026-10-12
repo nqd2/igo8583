@@ -7,8 +7,15 @@ import (
 	"github.com/nqd2/igo8583/tlv"
 )
 
-// Component represents a field in the message tree.
-// Byte slices, subfields, and TLV maps are mutable references; use Clone for an independent copy.
+/* ============================================================================
+ * Component Representation
+ * ============================================================================ */
+
+/*
+Component represents an individual data element in the ISO 8583 message tree.
+Supports scalar string values, binary byte slices, nested composite subfields,
+or parsed EMV BER-TLV tag structures.
+*/
 type Component struct {
 	FieldID   int
 	StringVal string
@@ -17,7 +24,6 @@ type Component struct {
 	TLV       *tlv.TLVMap
 }
 
-// NewStringComponent creates a component with a string value.
 func NewStringComponent(id int, val string) *Component {
 	return &Component{
 		FieldID:   id,
@@ -25,7 +31,6 @@ func NewStringComponent(id int, val string) *Component {
 	}
 }
 
-// NewBytesComponent creates a component with binary byte values.
 func NewBytesComponent(id int, val []byte) *Component {
 	return &Component{
 		FieldID:  id,
@@ -33,7 +38,6 @@ func NewBytesComponent(id int, val []byte) *Component {
 	}
 }
 
-// NewCompositeComponent creates a component that contains nested subfields.
 func NewCompositeComponent(id int) *Component {
 	return &Component{
 		FieldID:   id,
@@ -41,7 +45,6 @@ func NewCompositeComponent(id int) *Component {
 	}
 }
 
-// NewTLVComponent creates a component with a TLV map.
 func NewTLVComponent(id int, tlvMap *tlv.TLVMap) *Component {
 	return &Component{
 		FieldID: id,
@@ -49,7 +52,10 @@ func NewTLVComponent(id int, tlvMap *tlv.TLVMap) *Component {
 	}
 }
 
-// GetString returns the string value of this component.
+/* ============================================================================
+ * Component Accessors & Lifecycle
+ * ============================================================================ */
+
 func (c *Component) GetString() string {
 	if c.StringVal != "" {
 		return c.StringVal
@@ -60,7 +66,6 @@ func (c *Component) GetString() string {
 	return ""
 }
 
-// GetBytes returns the byte slice value of this component.
 func (c *Component) GetBytes() []byte {
 	if len(c.BytesVal) > 0 {
 		return c.BytesVal
@@ -71,7 +76,6 @@ func (c *Component) GetBytes() []byte {
 	return nil
 }
 
-// GetHex returns the value encoded in uppercase hex.
 func (c *Component) GetHex() string {
 	if len(c.BytesVal) > 0 {
 		return strings.ToUpper(hex.EncodeToString(c.BytesVal))
@@ -79,7 +83,6 @@ func (c *Component) GetHex() string {
 	return strings.ToUpper(hex.EncodeToString([]byte(c.StringVal)))
 }
 
-// GetSubfield retrieves a subfield by ID.
 func (c *Component) GetSubfield(subID int) (*Component, bool) {
 	if c.Subfields == nil {
 		return nil, false
@@ -88,7 +91,6 @@ func (c *Component) GetSubfield(subID int) (*Component, bool) {
 	return sub, ok
 }
 
-// SetSubfield sets a nested subfield component.
 func (c *Component) SetSubfield(subID int, sub *Component) {
 	if c.Subfields == nil {
 		c.Subfields = make(map[int]*Component)
@@ -97,7 +99,10 @@ func (c *Component) SetSubfield(subID int, sub *Component) {
 	c.Subfields[subID] = sub
 }
 
-// Clone creates a deep copy of the component.
+/*
+Clone creates an independent deep copy of the component, including raw byte slices,
+nested subfield maps, and TLV structures.
+*/
 func (c *Component) Clone() *Component {
 	if c == nil {
 		return nil
@@ -120,7 +125,14 @@ func (c *Component) Clone() *Component {
 	return clone
 }
 
-// FieldPackager defines the interface for packing and unpacking a single field.
+/* ============================================================================
+ * FieldPackager Interface
+ * ============================================================================ */
+
+/*
+FieldPackager defines the strategy for packing and unpacking a single data element.
+Implementations must be stateless and immutable for safe concurrent sharing.
+*/
 type FieldPackager interface {
 	Pack(c *Component) ([]byte, error)
 	Unpack(data []byte, offset int) (*Component, int, error)

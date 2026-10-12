@@ -8,7 +8,7 @@ import (
 	"github.com/nqd2/igo8583/prefixer"
 )
 
-// ISO93ASCII creates a standard ISO-8583:1993 ASCII packager.
+/* ISO93ASCII creates the ISO 8583:1993 ASCII codec. */
 func ISO93ASCII() *packager.Codec {
 	p := packager.NewBasePackager()
 	p.SetBitmapFormat("hex")

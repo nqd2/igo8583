@@ -15,23 +15,38 @@ var (
 	ErrMissingMTI = errors.New("packager: message is missing MTI (field 0)")
 )
 
-// Packager defines the interface for packing and unpacking full ISO-8583 messages.
+/* ============================================================================
+ * Interfaces & Compiled Codec Snapshot
+ * ============================================================================ */
+
+/*
+Packager defines the high-level contract for serializing and deserializing
+complete ISO 8583 messages to and from wire bytes.
+*/
 type Packager interface {
 	Pack(msg *message.Message) ([]byte, error)
 	Unpack(data []byte) (*message.Message, error)
 }
 
-// Codec is a compiled snapshot of a packager configuration. It has no mutators.
-// Custom FieldPackager implementations must themselves be immutable for concurrent use.
-type Codec struct{ p *BasePackager }
+/*
+Codec represents an immutable, compiled snapshot of an ISO 8583 packager configuration.
+It contains no mutator methods, guaranteeing safe concurrent use across multiple goroutines
+as long as registered custom field packagers are themselves immutable.
+*/
+type Codec struct {
+	p *BasePackager
+}
 
 func (c *Codec) Pack(msg *message.Message) ([]byte, error)    { return c.p.Pack(msg) }
 func (c *Codec) Unpack(data []byte) (*message.Message, error) { return c.p.Unpack(data) }
 func (c *Codec) HeaderLength() int                            { return c.p.HeaderLength() }
 func (c *Codec) BitmapFormat() string                         { return c.p.BitmapFormat() }
 
-// PackField encodes one data element using this codec's exact field definition.
-// It is intended for protocols that authenticate selected encoded fields.
+/*
+PackField encodes a single data element using this codec's exact field packager definition.
+Convenient for cryptographic protocols (such as MAC calculation or PIN block encryption)
+that require exact wire representation of selected fields without full message framing.
+*/
 func (c *Codec) PackField(fieldID int, comp *field.Component) ([]byte, error) {
 	if fieldID <= 0 {
 		return nil, fmt.Errorf("packager: field ID must be positive")
@@ -48,18 +63,38 @@ func (c *Codec) PackField(fieldID int, comp *field.Component) ([]byte, error) {
 	return fp.Pack(comp)
 }
 
-// BasePackager implements a customizable ISO-8583 message packager.
+/* ============================================================================
+ * BasePackager Configuration & Compilation
+ * ============================================================================ */
+
+/*
+BasePackager implements a configurable ISO 8583 message packager.
+Field packagers, framing lengths, and bitmap formats are configured here
+before calling Compile to create an immutable Codec.
+*/
 type BasePackager struct {
-	mu               sync.RWMutex
-	headerLength     int
-	lengthPrefix     int    // ASCII digits; counts all bytes after the prefix
-	bitmapFormat     string // "hex" or "binary"
-	bitmapField      int    // default 1
-	thirdBitmapField int    // -1 if contiguous, or DE number (e.g. 65)
-	fields           map[int]field.FieldPackager
+	mu           sync.RWMutex
+	headerLength int
+	lengthPrefix int
+	bitmapFormat string
+	fields       map[int]field.FieldPackager
 }
 
-// Compile validates configuration and returns an immutable snapshot.
+func NewBasePackager() *BasePackager {
+	return &BasePackager{
+		bitmapFormat: "hex",
+		fields:       make(map[int]field.FieldPackager),
+	}
+}
+
+/*
+Compile validates the packager configuration and returns an immutable, concurrency-safe Codec.
+Validates:
+  - Header and length prefix constraints (0..9 digits)
+  - Bitmap format ("hex" or "binary")
+  - Mandatory MTI (field 0) presence and fixed 4-character length
+  - Individual field packager validation rules
+*/
 func (p *BasePackager) Compile() (*Codec, error) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -68,9 +103,6 @@ func (p *BasePackager) Compile() (*Codec, error) {
 	}
 	if p.bitmapFormat != "hex" && p.bitmapFormat != "binary" {
 		return nil, fmt.Errorf("packager: unsupported bitmap format %q", p.bitmapFormat)
-	}
-	if p.bitmapField != 1 || (p.thirdBitmapField != -1 && p.thirdBitmapField != 65) {
-		return nil, fmt.Errorf("packager: only bitmap indicator positions 1 and 65 are supported")
 	}
 	if _, ok := p.fields[0]; !ok {
 		return nil, fmt.Errorf("packager: field 0 (MTI) is required")
@@ -96,7 +128,10 @@ func (p *BasePackager) Compile() (*Codec, error) {
 	return &Codec{p: copyP}, nil
 }
 
-// MustCompile is for built-in, statically checked presets.
+/*
+MustCompile compiles the BasePackager and panics on error.
+Intended for package-level initialization of verified presets.
+*/
 func (p *BasePackager) MustCompile() *Codec {
 	c, err := p.Compile()
 	if err != nil {
@@ -105,59 +140,42 @@ func (p *BasePackager) MustCompile() *Codec {
 	return c
 }
 
-// NewBasePackager creates a new BasePackager.
-func NewBasePackager() *BasePackager {
-	return &BasePackager{
-		bitmapFormat:     "hex",
-		bitmapField:      1,
-		thirdBitmapField: -1,
-		fields:           make(map[int]field.FieldPackager),
-	}
-}
-
-// SetHeaderLength sets the fixed header length.
 func (p *BasePackager) SetHeaderLength(len int) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.headerLength = len
 }
 
-// SetLengthPrefixASCII configures an ASCII decimal length prefix. The count excludes the prefix.
 func (p *BasePackager) SetLengthPrefixASCII(width int) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.lengthPrefix = width
 }
 
-// HeaderLength returns the configured header length.
 func (p *BasePackager) HeaderLength() int {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return p.headerLength
 }
 
-// SetBitmapFormat sets the bitmap encoding format ("hex" or "binary").
 func (p *BasePackager) SetBitmapFormat(format string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.bitmapFormat = format
 }
 
-// BitmapFormat returns the bitmap encoding format.
 func (p *BasePackager) BitmapFormat() string {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return p.bitmapFormat
 }
 
-// SetFieldPackager configures a packager for a specific field ID.
 func (p *BasePackager) SetFieldPackager(fieldID int, fp field.FieldPackager) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.fields[fieldID] = fp
 }
 
-// GetFieldPackager retrieves the packager for a specific field ID.
 func (p *BasePackager) GetFieldPackager(fieldID int) (field.FieldPackager, bool) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -165,7 +183,18 @@ func (p *BasePackager) GetFieldPackager(fieldID int) (field.FieldPackager, bool)
 	return fp, ok
 }
 
-// Pack serializes an ISO-8583 Message into wire bytes.
+/* ============================================================================
+ * Wire Serialization (Pack & Unpack)
+ * ============================================================================ */
+
+/*
+Pack serializes an in-memory Message into wire bytes in standard ISO 8583 sequence:
+ 1. Header (if configured)
+ 2. MTI (field 0)
+ 3. Primary and secondary/tertiary bitmaps
+ 4. Data elements in ascending numeric order
+ 5. Transport length prefix (if configured)
+*/
 func (p *BasePackager) Pack(msg *message.Message) ([]byte, error) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -221,8 +250,7 @@ func (p *BasePackager) Pack(msg *message.Message) ([]byte, error) {
 	out = append(out, bmBytes...)
 	maxField := bm.MaxField()
 	for i := 2; i <= maxField; i++ {
-		// If continuous tertiary bitmap, bit 65 is indicator bit, not data element
-		if i == 65 && maxField > 128 && p.thirdBitmapField <= 0 {
+		if i == 65 && maxField > 128 {
 			continue
 		}
 
@@ -254,7 +282,15 @@ func (p *BasePackager) Pack(msg *message.Message) ([]byte, error) {
 	return out, nil
 }
 
-// Unpack deserializes wire bytes into an ISO-8583 Message.
+/*
+Unpack parses wire bytes into an in-memory Message.
+Strictly validates:
+  - Transport length prefix count matching actual body size
+  - Exact header length matching configuration
+  - Valid MTI bytes
+  - Active fields present in bitmaps have corresponding packagers
+  - Rejection of any trailing unconsumed bytes
+*/
 func (p *BasePackager) Unpack(data []byte) (*message.Message, error) {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -307,7 +343,7 @@ func (p *BasePackager) Unpack(data []byte) (*message.Message, error) {
 	offset += consumedBM
 	maxField := bm.MaxField()
 	for i := 2; i <= maxField; i++ {
-		if i == 65 && maxField > 128 && p.thirdBitmapField <= 0 {
+		if i == 65 && maxField > 128 {
 			continue
 		}
 

@@ -14,8 +14,11 @@ type compositeFieldPackager struct {
 	subPackagers map[int]FieldPackager
 }
 
-// NewCompositeFieldPackager creates a packager for composite fields with nested subfields.
+/*
+NewCompositeFieldPackager creates a packager for composite fields with nested subfields.
+*/
 func NewCompositeFieldPackager(
+
 	length int,
 	description string,
 	pref prefixer.Prefixer,

@@ -11,7 +11,9 @@ type binaryPrefixer struct {
 	maxVal  int
 }
 
-// Binary returns a binary length prefixer (Big Endian) of byteLen (1, 2, or 4 bytes).
+/*
+Binary returns a binary length prefixer (Big Endian) of byteLen (1, 2, or 4 bytes).
+*/
 func Binary(byteLen int) Prefixer {
 	var maxVal int
 	switch byteLen {
@@ -27,6 +29,9 @@ func Binary(byteLen int) Prefixer {
 	return &binaryPrefixer{byteLen: byteLen, maxVal: maxVal}
 }
 
+/*
+Pre-configured binary length prefixer singletons.
+*/
 var (
 	Binary1   = Binary(1)
 	Binary2BE = Binary(2)

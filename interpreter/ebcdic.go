@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Standard IBM1047/CP037 ASCII to EBCDIC and EBCDIC to ASCII conversion tables
+/* Standard IBM1047/CP037 ASCII to EBCDIC and EBCDIC to ASCII conversion tables. */
 var asciiToEbcdic = [256]byte{
 	0x00, 0x01, 0x02, 0x03, 0x37, 0x2D, 0x2E, 0x2F, 0x16, 0x05, 0x25, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 	0x10, 0x11, 0x12, 0x13, 0x3C, 0x3D, 0x32, 0x26, 0x18, 0x19, 0x3F, 0x27, 0x1C, 0x1D, 0x1E, 0x1F,
@@ -45,7 +45,9 @@ var ebcdicToAscii = [256]byte{
 
 type ebcdicInterpreter struct{}
 
-// EBCDIC returns an Interpreter for IBM EBCDIC encoded strings.
+/*
+EBCDIC returns an Interpreter for IBM EBCDIC (CP037/IBM1047) encoded strings.
+*/
 func EBCDIC() Interpreter {
 	return ebcdicInterpreter{}
 }

@@ -13,12 +13,19 @@ var (
 	ErrNotStruct    = errors.New("bind: source must be a struct or struct pointer")
 )
 
-// Marshal converts a Go struct annotated with `iso:"..."` tags into a Message.
-// Tag syntax:
-//
-//	`iso:"0"`         -> field 0 (MTI)
-//	`iso:"2"`         -> field 2
-//	`iso:"48.1"`      -> subfield 1 of field 48
+/* ============================================================================
+ * Struct Marshalling (Go Struct -> ISO Message)
+ * ============================================================================ */
+
+/*
+Marshal converts a Go struct annotated with `iso:"..."` tags into an ISO 8583 Message.
+
+Supported tag syntax:
+  - `iso:"0"`         -> field 0 (MTI)
+  - `iso:"2"`         -> field 2
+  - `iso:"48.1"`      -> subfield 1 of composite field 48
+  - `iso:"-"`         -> ignored field
+*/
 func Marshal(v any) (*Message, error) {
 	val := reflect.ValueOf(v)
 	if val.Kind() == reflect.Pointer {
@@ -47,7 +54,6 @@ func Marshal(v any) (*Message, error) {
 		}
 
 		if strings.Contains(tag, ".") {
-			// Subfield path (e.g. "48.1")
 			strVal := formatVal(fieldVal)
 			if strVal != "" {
 				if err := msg.SetSubfieldByPath(tag, strVal); err != nil {
@@ -81,7 +87,14 @@ func Marshal(v any) (*Message, error) {
 	return msg, nil
 }
 
-// Unmarshal populates a struct pointer with values from an ISO-8583 Message based on `iso:"..."` tags.
+/* ============================================================================
+ * Struct Unmarshalling (ISO Message -> Go Struct)
+ * ============================================================================ */
+
+/*
+Unmarshal populates an exported struct pointer with values from an ISO 8583 Message
+based on `iso:"..."` struct tags.
+*/
 func Unmarshal(msg *Message, v any) error {
 	if msg == nil {
 		return errors.New("bind: nil message")
@@ -141,6 +154,10 @@ func Unmarshal(msg *Message, v any) error {
 
 	return nil
 }
+
+/* ============================================================================
+ * Internal Reflection Helpers
+ * ============================================================================ */
 
 func formatVal(v reflect.Value) string {
 	switch v.Kind() {

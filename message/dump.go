@@ -9,8 +9,14 @@ import (
 	"github.com/nqd2/igo8583/field"
 )
 
-// MaskPAN masks a credit card Primary Account Number (PAN) for diagnostic display.
-// Keeps first 6 and last 4 digits, masks the middle with '*'.
+/* ============================================================================
+ * Data Masking & Diagnostics
+ * ============================================================================ */
+
+/*
+MaskPAN masks a card Primary Account Number (PAN) for PCI-DSS compliance display.
+Preserves the first 6 digits (BIN) and last 4 digits, replacing intermediate digits with '*'.
+*/
 func MaskPAN(pan string) string {
 	panLen := len(pan)
 	if panLen <= 10 {
@@ -22,7 +28,10 @@ func MaskPAN(pan string) string {
 	return first6 + middle + last4
 }
 
-// Dump returns a human-readable representation of the message with optional masking of selected fields.
+/*
+Dump formats the message into a human-readable XML-like log string.
+If maskSensitive is true, sensitive data elements (PAN, tracks, PIN block) are masked.
+*/
 func (m *Message) Dump(maskSensitive bool) string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -34,7 +43,6 @@ func (m *Message) Dump(maskSensitive bool) string {
 		sb.WriteString(fmt.Sprintf("  <!-- header --> <header hex=\"%s\"/>\n", strings.ToUpper(hex.EncodeToString(m.header))))
 	}
 
-	// Sort fields
 	var fieldIDs []int
 	for id := range m.fields {
 		fieldIDs = append(fieldIDs, id)
@@ -87,18 +95,16 @@ func dumpComponent(sb *strings.Builder, id int, comp *field.Component, indent st
 	sb.WriteString(fmt.Sprintf("%s<!-- %03d --> <field id=\"%d\" value=\"%s\"/>\n", indent, id, id, val))
 }
 
-func applyMasking(id int, val string, bytesVal []byte) string {
+func applyMasking(id int, val string, _ []byte) string {
 	switch id {
-	case 2: // PAN
+	case 2:
 		return MaskPAN(val)
-	case 35, 45: // Track 2 / Track 1
+	case 35, 45:
 		if len(val) >= 16 {
 			return MaskPAN(val[:16]) + "..."
 		}
 		return strings.Repeat("*", len(val))
-	case 52: // PIN Block
-		return "****************"
-	case 53: // Security Related Control Information
+	case 52, 53:
 		return "****************"
 	default:
 		return val

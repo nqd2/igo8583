@@ -9,30 +9,41 @@ import (
 	"github.com/nqd2/igo8583/internal/diagnostic"
 )
 
+/* ============================================================================
+ * Errors
+ * ============================================================================ */
+
 var (
 	ErrInvalidTag     = errors.New("tlv: invalid tag format")
 	ErrBufferTooShort = errors.New("tlv: unexpected end of buffer")
 	ErrInvalidLength  = errors.New("tlv: invalid length encoding")
 )
 
-// Node represents a single BER-TLV data element.
+/* ============================================================================
+ * Node Representation
+ * ============================================================================ */
+
+/*
+Node represents a single EMV BER-TLV data element containing a tag, value,
+and optional nested child nodes.
+*/
 type Node struct {
 	Tag      []byte
 	Value    []byte
 	Children []*Node
 }
 
-// TagHex returns the hex-encoded string of the tag in uppercase (e.g. "9F02", "82").
 func (n *Node) TagHex() string {
 	return strings.ToUpper(hex.EncodeToString(n.Tag))
 }
 
-// ValueHex returns the hex-encoded string of the value in uppercase.
 func (n *Node) ValueHex() string {
 	return strings.ToUpper(hex.EncodeToString(n.Value))
 }
 
-// IsConstructed returns true if the tag represents a constructed TLV object.
+/*
+IsConstructed returns true if the tag represents a constructed TLV object.
+*/
 func (n *Node) IsConstructed() bool {
 	if len(n.Tag) == 0 {
 		return false
@@ -40,7 +51,9 @@ func (n *Node) IsConstructed() bool {
 	return (n.Tag[0] & 0x20) != 0
 }
 
-// NewNode creates a primitive TLV node without copying val.
+/*
+NewNode creates a primitive TLV node from a hex tag string and raw byte value.
+*/
 func NewNode(tagHex string, val []byte) (*Node, error) {
 	tagBytes, err := hex.DecodeString(tagHex)
 	if err != nil || len(tagBytes) == 0 {
@@ -49,7 +62,14 @@ func NewNode(tagHex string, val []byte) (*Node, error) {
 	return &Node{Tag: tagBytes, Value: val}, nil
 }
 
-// Decode parses a raw byte slice into a slice of TLV Nodes.
+/* ============================================================================
+ * Parsing & Serialization
+ * ============================================================================ */
+
+/*
+Decode parses raw BER-TLV wire bytes into a slice of Node elements.
+Supports multi-byte tags, multi-byte length headers, and nested constructed nodes.
+*/
 func Decode(data []byte) ([]*Node, error) {
 	return decode(data, 0)
 }
@@ -139,7 +159,9 @@ func decode(data []byte, depth int) ([]*Node, error) {
 	return nodes, nil
 }
 
-// Encode encodes a list of Nodes into wire BER-TLV bytes.
+/*
+Encode serializes a slice of Nodes into wire BER-TLV byte sequence.
+*/
 func Encode(nodes []*Node) ([]byte, error) {
 	var out []byte
 	for _, n := range nodes {
@@ -152,7 +174,10 @@ func Encode(nodes []*Node) ([]byte, error) {
 	return out, nil
 }
 
-// EncodeNode serializes a single TLV Node.
+/*
+EncodeNode serializes an individual TLV Node, recursively encoding children
+if the node represents a constructed tag.
+*/
 func EncodeNode(n *Node) ([]byte, error) {
 	if len(n.Tag) == 0 {
 		return nil, ErrInvalidTag
@@ -186,13 +211,19 @@ func EncodeNode(n *Node) ([]byte, error) {
 	return buf, nil
 }
 
-// TLVMap is a convenient wrapper around TLV nodes for key/value lookups.
+/* ============================================================================
+ * TLVMap Container & Operations
+ * ============================================================================ */
+
+/*
+TLVMap provides fast, indexed lookup and modification of BER-TLV tags.
+Tag indexing is case-insensitive.
+*/
 type TLVMap struct {
 	nodes []*Node
 	index map[string]*Node
 }
 
-// NewTLVMap creates a TLVMap from a list of nodes.
 func NewTLVMap(nodes []*Node) *TLVMap {
 	m := &TLVMap{
 		nodes: nodes,
@@ -204,7 +235,9 @@ func NewTLVMap(nodes []*Node) *TLVMap {
 	return m
 }
 
-// ParseTLV parses raw TLV data and returns a TLVMap.
+/*
+ParseTLV decodes raw BER-TLV bytes and returns an indexed TLVMap container.
+*/
 func ParseTLV(data []byte) (*TLVMap, error) {
 	nodes, err := Decode(data)
 	if err != nil {
@@ -213,12 +246,13 @@ func ParseTLV(data []byte) (*TLVMap, error) {
 	return NewTLVMap(nodes), nil
 }
 
-// Nodes returns the stored slice and nodes by reference.
 func (m *TLVMap) Nodes() []*Node {
 	return m.nodes
 }
 
-// Clone returns an independent copy, including nested constructed tags.
+/*
+Clone returns an independent deep copy of the TLVMap and all contained nodes.
+*/
 func (m *TLVMap) Clone() *TLVMap {
 	if m == nil {
 		return nil
@@ -238,7 +272,6 @@ func (m *TLVMap) Clone() *TLVMap {
 	return NewTLVMap(nodes)
 }
 
-// Get returns a tag value by reference.
 func (m *TLVMap) Get(tagHex string) ([]byte, bool) {
 	tagUpper := strings.ToUpper(tagHex)
 	if node, ok := m.index[tagUpper]; ok {
@@ -247,7 +280,6 @@ func (m *TLVMap) Get(tagHex string) ([]byte, bool) {
 	return nil, false
 }
 
-// GetHex returns the hex string value of a tag.
 func (m *TLVMap) GetHex(tagHex string) (string, bool) {
 	val, ok := m.Get(tagHex)
 	if !ok {
@@ -256,7 +288,6 @@ func (m *TLVMap) GetHex(tagHex string) (string, bool) {
 	return strings.ToUpper(hex.EncodeToString(val)), true
 }
 
-// Set adds or updates a tag without copying val.
 func (m *TLVMap) Set(tagHex string, val []byte) error {
 	tagUpper := strings.ToUpper(tagHex)
 	if node, ok := m.index[tagUpper]; ok {
@@ -272,7 +303,6 @@ func (m *TLVMap) Set(tagHex string, val []byte) error {
 	return nil
 }
 
-// SetHex adds or updates a tag with a hex string value.
 func (m *TLVMap) SetHex(tagHex string, valHex string) error {
 	valBytes, err := hex.DecodeString(valHex)
 	if err != nil {
@@ -281,7 +311,6 @@ func (m *TLVMap) SetHex(tagHex string, valHex string) error {
 	return m.Set(tagHex, valBytes)
 }
 
-// Encode serializes all tags in the TLVMap.
 func (m *TLVMap) Encode() ([]byte, error) {
 	return Encode(m.nodes)
 }

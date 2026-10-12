@@ -1,0 +1,12 @@
+{
+  "name": "Retail switch demo",
+  "bitmap_format": "hex",
+  "fields": {
+    "0": {"name": "MTI", "len": 4, "type": "string", "prefixer": "fixed"},
+    "3": {"name": "Processing code", "len": 6, "type": "string", "prefixer": "fixed", "padder": "left_zero"},
+    "4": {"name": "Transaction amount", "len": 12, "type": "string", "prefixer": "fixed", "padder": "left_zero"},
+    "11": {"name": "STAN", "len": 6, "type": "string", "prefixer": "fixed", "padder": "left_zero"},
+    "39": {"name": "Response code", "len": 2, "type": "string", "prefixer": "fixed"},
+    "41": {"name": "Terminal ID", "len": 8, "type": "string", "prefixer": "fixed", "padder": "right_space"}
+  }
+}

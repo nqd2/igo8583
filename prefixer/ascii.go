@@ -11,12 +11,17 @@ type asciiPrefixer struct {
 	maxVal  int
 }
 
-// Ascii returns an ASCII length prefixer with nDigits characters (e.g. LL = 2, LLL = 3).
+/*
+Ascii returns an ASCII length prefixer with nDigits characters (e.g. LL = 2, LLL = 3).
+*/
 func Ascii(nDigits int) Prefixer {
 	maxVal := int(math.Pow10(nDigits)) - 1
 	return &asciiPrefixer{nDigits: nDigits, maxVal: maxVal}
 }
 
+/*
+Pre-configured ASCII prefixer singletons.
+*/
 var (
 	AsciiL      = Ascii(1)
 	AsciiLL     = Ascii(2)

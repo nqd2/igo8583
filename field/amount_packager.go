@@ -7,14 +7,14 @@ import (
 	"github.com/nqd2/igo8583/interpreter"
 )
 
-// amountFieldPackager encodes a sign byte followed by zero-padded digits.
+/* amountFieldPackager encodes a sign byte followed by zero-padded digits. */
 type amountFieldPackager struct {
 	length      int
 	description string
 	binary      bool
 }
 
-// NewAmountFieldPackager creates an ISO87 signed amount field packager.
+/* NewAmountFieldPackager creates a signed amount field packager. */
 func NewAmountFieldPackager(length int, description string, binary bool) FieldPackager {
 	return &amountFieldPackager{length: length, description: description, binary: binary}
 }

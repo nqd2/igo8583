@@ -8,7 +8,7 @@ import (
 	"github.com/nqd2/igo8583"
 )
 
-// Field 11 sets bit 11: 1 << (64 - 11). No other data fields are set.
+/* Field 11 sets bit 11: 1 << (64 - 11). No other data fields are set. */
 func TestSyntheticWireFixtures(t *testing.T) {
 	binary, err := hex.DecodeString("02000020000000000000000042")
 	if err != nil {

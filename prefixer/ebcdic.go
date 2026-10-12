@@ -10,12 +10,17 @@ type ebcdicPrefixer struct {
 	maxVal  int
 }
 
-// Ebcdic returns an EBCDIC length prefixer with nDigits characters.
+/*
+Ebcdic returns an EBCDIC length prefixer with nDigits characters.
+*/
 func Ebcdic(nDigits int) Prefixer {
 	maxVal := int(math.Pow10(nDigits)) - 1
 	return &ebcdicPrefixer{nDigits: nDigits, maxVal: maxVal}
 }
 
+/*
+Pre-configured EBCDIC prefixer singletons.
+*/
 var (
 	EbcdicL   = Ebcdic(1)
 	EbcdicLL  = Ebcdic(2)
